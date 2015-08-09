@@ -38,6 +38,7 @@
 #include "tm_stm32f4_timer_properties.h"
 #include "defines.h"
 #include "bmp085.h"
+#include "alarms.h"
 #include <stdio.h>
 
 

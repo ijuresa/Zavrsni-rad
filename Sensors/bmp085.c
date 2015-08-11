@@ -6,6 +6,7 @@
 #include "tm_stm32f4_timer_properties.h"
 #include "defines.h"
 
+
 /* Read and write address, I2C lib is shifting */
 #define readAddress 0xEF		
 #define writeAddress 0xEE
@@ -43,13 +44,13 @@ volatile uint8_t OSS = 3;
 //    Output:      Returns data from registers
 //    Misc:		  	 -
 //------------------------------------------------------------------------------
-int BMP085readCalibration(uint8_t address)
+int BMP085readCalibration(I2C_TypeDef* I2Cx, uint8_t address)
 {
 	uint8_t msb, lsb;
 	
 	/* Reads data from registers and saves it to local variables */
-	msb = TM_I2C_Read(I2C1, writeAddress, address);
-	lsb = TM_I2C_Read(I2C1, writeAddress, address + 1);
+	msb = TM_I2C_Read(I2Cx, writeAddress, address);
+	lsb = TM_I2C_Read(I2Cx, writeAddress, address + 1);
 	
 	return (int) msb << 8 | lsb;
 }
@@ -61,19 +62,19 @@ int BMP085readCalibration(uint8_t address)
 //    Output:      -
 //    Misc:		  	 -
 //------------------------------------------------------------------------------
-void BMP085Calibration()
+void BMP085Calibration(I2C_TypeDef* I2Cx)
 {
-	ac1 = BMP085readCalibration(0xAA);
-  ac2 = BMP085readCalibration(0xAC);
-  ac3 = BMP085readCalibration(0xAE);
-  ac4 = BMP085readCalibration(0xB0);
-  ac5 = BMP085readCalibration(0xB2);
-  ac6 = BMP085readCalibration(0xB4);
-  b1 = BMP085readCalibration(0xB6);
-  b2 = BMP085readCalibration(0xB8);
-  mb = BMP085readCalibration(0xBA);
-  mc = BMP085readCalibration(0xBC);
-  md = BMP085readCalibration(0xBE);
+	ac1 = BMP085readCalibration(I2Cx, 0xAA);
+  ac2 = BMP085readCalibration(I2Cx, 0xAC);
+  ac3 = BMP085readCalibration(I2Cx, 0xAE);
+  ac4 = BMP085readCalibration(I2Cx, 0xB0);
+  ac5 = BMP085readCalibration(I2Cx, 0xB2);
+  ac6 = BMP085readCalibration(I2Cx, 0xB4);
+  b1 = BMP085readCalibration(I2Cx, 0xB6);
+  b2 = BMP085readCalibration(I2Cx, 0xB8);
+  mb = BMP085readCalibration(I2Cx, 0xBA);
+  mc = BMP085readCalibration(I2Cx, 0xBC);
+  md = BMP085readCalibration(I2Cx, 0xBE);
 }
 
 //------------------------------------------------------------------------------
@@ -83,15 +84,15 @@ void BMP085Calibration()
 //    Output:      Returns UT
 //    Misc:		  	 -
 //------------------------------------------------------------------------------
-int BMP085readUT()
+int BMP085readUT(I2C_TypeDef* I2Cx)
 {
 	/* Writes 0x2E into 0xF4 register */
-	TM_I2C_Write(I2C1, writeAddress, 0xF4, 0x2E);
+	TM_I2C_Write(I2Cx, writeAddress, 0xF4, 0x2E);
 	
 	/* Max conversion time for temperature is 4.5ms */
 	Delayms(5);
   
-	ut = BMP085readCalibration(0xF6);
+	ut = BMP085readCalibration(I2Cx, 0xF6);
 	
 	return ut;
 }
@@ -103,20 +104,20 @@ int BMP085readUT()
 //    Output:      Returns UP
 //    Misc:		  	 -
 //------------------------------------------------------------------------------
-int BMPreadUP()
+int BMPreadUP(I2C_TypeDef* I2Cx)
 {
 	uint8_t msb, lsb, xlsb;
 	long up = 0;
 	
 	/* Writes 0x34 + (OSS << 6) into 0xF4 register */
-	TM_I2C_Write(I2C1, writeAddress, 0xF4, 0x34 + (OSS << 6));
+	TM_I2C_Write(I2Cx, writeAddress, 0xF4, 0x34 + (OSS << 6));
 	/* My OSS = 3 -> Max. Conversion time[ms] = 25.5 */
 	Delayms(26);
 	
 	/* Reads data from registers and saves it to local variables */
-	msb = TM_I2C_Read(I2C1, writeAddress, 0xF6);
-	lsb = TM_I2C_Read(I2C1, writeAddress, 0xF7);
-	xlsb = TM_I2C_Read(I2C1, writeAddress, 0xF8);
+	msb = TM_I2C_Read(I2Cx, writeAddress, 0xF6);
+	lsb = TM_I2C_Read(I2Cx, writeAddress, 0xF7);
+	xlsb = TM_I2C_Read(I2Cx, writeAddress, 0xF8);
 	
 	up = (((msb << 16) | (lsb << 8) | xlsb) >> (8 - OSS));
 	return up;

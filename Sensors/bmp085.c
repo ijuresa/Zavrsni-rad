@@ -7,7 +7,7 @@
 #include "defines.h"
 
 
-/* Read and write address, I2C lib is shifting */
+/* Read and write address */
 #define readAddress 0xEF		
 #define writeAddress 0xEE
 

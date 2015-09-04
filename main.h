@@ -32,13 +32,18 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx.h"
 #include "tm_stm32f4_delay.h"
-//#include "tm_stm32f4_onewire.h"
-//#include "tm_stm32f4_usart.h"
+#include "tm_stm32f4_onewire.h"
+#include "tm_stm32f4_usart.h"
 #include "tm_stm32f4_i2c.h"
 #include "tm_stm32f4_timer_properties.h"
+#include "stm32f4xx_gpio.h"
 #include "defines.h"
 #include "bmp085.h"
 #include "pcf8575.h"
+#include "delay.h"
+#include "tm_stm32f4_stmpe811.h"
+#include "tm_stm32f4_ili9341.h"
+#include "tm_stm32f4_ili9341_button.h"
 #include <stdio.h>
 
 
